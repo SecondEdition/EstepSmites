@@ -19,7 +19,7 @@ function validUser(user){
     return validEmail && validPassword;
 }
 
-router.post("/signup", async (req, res, next) => {
+router.post("/signup", (req, res, next) => {
     if(validUser(req.body)) {
         appuser.userExists(req.body.email).then((exists) => {
             if(!exists){
@@ -54,9 +54,22 @@ router.post("/signup", async (req, res, next) => {
     }
 });
 
-router.post('/login', async (res, req, next) => {
+router.post('/login', (req, res, next) => {
+    if (validUser(req.body)) {
+        // check to see if in db
+        appuser.getUser(req.body.email).then((user) => {
+            if(user){
+                res.json({
+                    userinfo: user
+                });
+            } else {
+                next(new Error('User does not exist'));
+            }
+        });
+    } else {
+        next(new Error('Invalid User'));
 
-
+    }
 });
 
 module.exports = router;
