@@ -25,6 +25,7 @@ CREATE TABLE appuser(
 
 GRANT CONNECT ON DATABASE es_dbmain TO es_authusr;
 GRANT ALL PRIVILEGES ON TABLE appuser TO es_authusr;
+GRANT USAGE, SELECT ON SEQUENCE appuser_user_id_seq TO es_authusr;
 
 /*
 USEFUL COMMANDS QR:

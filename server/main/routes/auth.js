@@ -1,8 +1,7 @@
 const express = require('express');
-const db = require('../db');
+const appuser = require('../db/appuser');
 
 const router = express.Router();
-const pool = db.getPool();
 
 router.get("/", async(req,res) => {
     res.json({
@@ -19,24 +18,14 @@ function validUser(user){
     return validEmail && validPassword;
 }
 
-async function userExists(email){
-    const user = await pool.query("SELECT EXISTS (SELECT TRUE FROM appuser WHERE email=($1))",[email]);
-    return Boolean(user.rows[0].exists);
-}
-
-router.post("/signup", async(req, res, next) => {
+router.post("/signup", async (req, res, next) => {
     if(validUser(req.body)) {
-        if(userExists(req.body.email) == true) {
+        appuser.userExists(req.body.email).then((exists) => {
             res.json({
-                message: 'post request to /api/auth/signup is working'
+                message: exists
             });
-        } else {
-            res.json({
-                message: 'user does not exist'
-            })
-        }
+        });
     } else {
-        // send an error
         next(new Error('Invalid User'));
     }
 });
