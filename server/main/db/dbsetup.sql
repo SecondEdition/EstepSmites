@@ -6,26 +6,25 @@ CREATE USER dbadmin WITH PASSWORD 'U7cFDn4WpNGrhD68j7doom8F';
 /*    \q    */
 /*    psql -d postgres -U dbadmin    */
 
-CREATE DATABASE es_dbmain;
-REVOKE ALL ON DATABASE es_dbmain FROM PUBLIC;
+CREATE DATABASE esdb_main;
+REVOKE ALL ON DATABASE esdb_main FROM PUBLIC;
 
-CREATE USER es_authusr WITH PASSWORD '4W3NEW6s82RmweQCfAi2wCwg';
+CREATE USER esauth WITH PASSWORD '4W3NEW6s82RmweQCfAi2wCwg';
 
 /*    \q   */
-/*    psql -d esdb -U dbadmin   */
+/*    psql -d esdb_main -U dbadmin   */
 
 CREATE TABLE appuser(
     user_id SERIAL PRIMARY KEY,
-    username VARCHAR(64),
     email VARCHAR(254), 
     pass VARCHAR(64),
     is_active BOOLEAN,
     created_on TIMESTAMP WITH TIME ZONE 
 );
 
-GRANT CONNECT ON DATABASE es_dbmain TO es_authusr;
-GRANT ALL PRIVILEGES ON TABLE appuser TO es_authusr;
-GRANT USAGE, SELECT ON SEQUENCE appuser_user_id_seq TO es_authusr;
+GRANT CONNECT ON DATABASE esdb_main TO esauth;
+GRANT ALL PRIVILEGES ON TABLE appuser TO esauth;
+GRANT USAGE, SELECT ON SEQUENCE appuser_user_id_seq TO esauth;
 
 /*
 USEFUL COMMANDS QR:

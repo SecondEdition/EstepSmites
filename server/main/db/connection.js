@@ -3,11 +3,11 @@ const Pool = require("pg").Pool;
 let pool;
 
 const config = {
-    user: "es_authusr",
+    user: "esauth",
     password: "U7cFDn4WpNGrhD68j7doom8F", 
     host: "localhost",
     port: 5432,
-    database: "es_dbmain"
+    database: "esdb_main"
 };
 
 module.exports = {

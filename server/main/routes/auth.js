@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const appuser = require('../db/appuser');
 
 const router = express.Router();
@@ -21,13 +22,41 @@ function validUser(user){
 router.post("/signup", async (req, res, next) => {
     if(validUser(req.body)) {
         appuser.userExists(req.body.email).then((exists) => {
-            res.json({
-                message: exists
-            });
+            if(!exists){
+                // email is unique
+                // hash password
+                const saltRounds = 10;
+                bcrypt.hash(req.body.password, saltRounds).then(function(hash) {
+                    // insert user into db
+                    const user = {
+                        email: req.body.email,
+                        password: hash,
+                    }
+                    appuser.createUser(user).then((newuser) => {
+                        res.json({
+                            message: 'Email is unique',
+                            id: newuser.id,
+                            email: newuser.email,
+                            dbhash: hash,
+                            created: newuser.created_on
+                        });
+                    })
+                    // redirect to login
+                    // TBD
+                });
+            } else {
+                // email is in use
+                next(new Error('Email in use'))
+            }
         });
     } else {
         next(new Error('Invalid User'));
     }
+});
+
+router.post('/login', async (res, req, next) => {
+
+
 });
 
 module.exports = router;
