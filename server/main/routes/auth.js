@@ -21,18 +21,19 @@ function validUser(user){
 
 router.post("/signup", (req, res, next) => {
     if(validUser(req.body)) {
-        appuser.userExists(req.body.email).then((exists) => {
-            if(!exists){
-                // email is unique
-                // hash password
+        appuser.getUser(req.body.email).then((user) => {
+            if(!user){
                 const saltRounds = 10;
                 bcrypt.hash(req.body.password, saltRounds).then(function(hash) {
-                    // insert user into db
                     const user = {
                         email: req.body.email,
-                        password: hash,
+                        password: hash
                     }
                     appuser.createUser(user).then((newuser) => {
+                        
+                        // redirect to login
+                        // TBD
+
                         res.json({
                             message: 'Email is unique',
                             id: newuser.id,
@@ -41,8 +42,6 @@ router.post("/signup", (req, res, next) => {
                             created: newuser.created_on
                         });
                     })
-                    // redirect to login
-                    // TBD
                 });
             } else {
                 // email is in use
@@ -56,19 +55,26 @@ router.post("/signup", (req, res, next) => {
 
 router.post('/login', (req, res, next) => {
     if (validUser(req.body)) {
-        // check to see if in db
         appuser.getUser(req.body.email).then((user) => {
             if(user){
-                res.json({
-                    userinfo: user
+                bcrypt.compare(req.body.password, user.password).then(function(result) {
+                    if(result){
+                        // result == true
+                        res.json({
+                            message: "logging in...",
+                            validpass: result,
+                            userinfo: user
+                        });
+                    } else {
+                        next(new Error('Invalid login'));
+                    }
                 });
             } else {
-                next(new Error('User does not exist'));
+                next(new Error('Invalid login'));
             }
         });
     } else {
         next(new Error('Invalid User'));
-
     }
 });
 
