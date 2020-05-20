@@ -4,8 +4,8 @@ let pool;
 
 const config = {
     user: "esauth",
-    password: "U7cFDn4WpNGrhD68j7doom8F", 
-    host: "localhost",
+    password: process.env.DB_PASS,
+    host: process.env.DB_HOST,
     port: 5432,
     database: "esdb_main"
 };

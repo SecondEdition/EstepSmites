@@ -1,14 +1,19 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./db/connection");
 const authRouter = require('./routes/auth');
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
 
 // init objects 
 const app = express();
 
 // middleware
-app.use(cors());
+app.use(cors({
+    origin: process.env.SVR_ORIGIN,
+    credentials: true
+}));
 app.use(express.json()); // creates req object (?)
+app.use(cookieParser(process.env.COOKIE_SECRET))
 
 // routing
 app.use("/api/auth", authRouter);
@@ -26,4 +31,4 @@ app.use(function(err, req, res, next) {
         message: err.message,
         error: req.app.get('env') === 'development' ? err : {}
     });
-  });
+});
